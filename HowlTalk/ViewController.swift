@@ -7,26 +7,48 @@
 //
 
 import UIKit
+import Firebase
 
-class ViewController: UIViewController {
+//UITableViewDelegate, UITableViewDataSource -> 테이블 뷰와 정보 교환 가능
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
     
-    @IBOutlet weak var textLabel: UILabel!
-    @IBOutlet weak var actionButton: UIButton!
-    @IBOutlet weak var textField: UITextField!
-    @IBOutlet weak var mainImageView: UIImageView!
+    var strArray = ["yeji", "judy", "snoopy"]
+    var imageArray = [UIImage(named: "yeji"), UIImage(named: "judy"), UIImage(named: "snoopy")]
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return strArray.count;   //행의 갯수 지정
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell=tableView.dequeueReusableCell(withIdentifier: "itemCell", for: indexPath)  //indexPath 지정을 통해 행을 알 수 있음
+        
+        //mItemCell class로 형 변환
+        var mItemCell = cell as! myItemCell
+        //MyItemCell.nameLabel.text = "input text"
+        mItemCell.nameLabel.text = strArray[indexPath.row]
+        mItemCell.mainImageView.image = imageArray[indexPath.row]
+        return mItemCell
+    }
+    
+    @IBOutlet weak var mainTableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        textLabel.text = "Testing input.."
        
-        actionButton.addTarget(self, action: #selector(actionEvent), for: UIControl.Event.touchUpInside)
-        //self는 자기 클래스 지칭, for는 어떤 상태일 때 실행할지
+        mainTableView.delegate = self
+        mainTableView.dataSource = self
         
-    }
-    @objc func actionEvent() {
-        textLabel.text = textField.text
-        mainImageView.image = UIImage(named:"mugadang")
+        Auth.auth().createUser(withEmail: "test@gmail.com", password: "123456") { (auth,err) in print(auth?.user)
+            
+        }
     }
 }
 
+class myItemCell : UITableViewCell {
+    
+    
+    @IBOutlet weak var nameLabel: UILabel!
+    @IBOutlet weak var mainImageView: UIImageView!
+    
+}
